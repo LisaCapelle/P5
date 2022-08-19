@@ -21,6 +21,10 @@ function getProduct() {
 }
 getProduct();
 
+// display title of product page with product name - OK
+document.getElementById("title").innerText = product.name;
+document.title = product.name;
+
 // display colors of the clicked product - OK
 function getColorOptions(product) {
     console.log(product);
@@ -58,6 +62,7 @@ addToCartBtn.addEventListener("click", (e) => {
             selectedProductColor: selectedColor,
             selectedProductQuantity: selectedQuantity
         }
+    
         // create variable for message about LS updates
         let messageUpdatesCart = false;
 
@@ -113,14 +118,12 @@ addToCartBtn.addEventListener("click", (e) => {
             }
             // if the variable messageUpdatesCart is true the following message is displayed:
             if (messageUpdatesCart) {
-                alert(`Le produit ${product.name}, coloris ${selectedColor} a été ajouté au panier.`);
+                alert(`Vous venez de rajouter ${selectedQuantity} unités du produit ${product.name}, coloris ${selectedColor} a été ajouté au panier.`);
             }
-
-
-            // if color not selected or quantity not between 1 and 100: display following message:
-            else {
-                alert(`La couleur n'est pas sélectionnée et/ou la quantité n'est pas comprise entre 1 et 100`);
-            }
+        }
+        // if color not selected or quantity not between 1 and 100: display following message:
+        else {
+            alert(`La couleur n'est pas sélectionnée et/ou la quantité n'est pas comprise entre 1 et 100`);
         }
     })
 
