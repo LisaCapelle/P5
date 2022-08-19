@@ -17,7 +17,7 @@ function getProduct() {
         .then(response => { if (response.ok) { return response.json(); } })
         .then(product => { displayProduct(product) })
         .catch(function (error) { alert('une erreur est survenue') });
-// }
+    // }
 }
 getProduct();
 
@@ -42,83 +42,87 @@ function displayProduct(product) {
 // save product information to local storage: 
 // select button to add to cart and add event listener
 const addToCartBtn = document.querySelector("#addToCart");
-addToCartBtn.addEventListener("click", (e) =>{
+addToCartBtn.addEventListener("click", (e) => {
     e.preventDefault();
-// select color choice and add it into variable
-const color = document.querySelector("#colors");
-selectedColor = color.value;
-// select quantity choice and add it into variable
-const quantity = document.querySelector("#quantity");
-selectedQuantity = quantity.value;
+    // select color choice and add it into variable
+    const color = document.querySelector("#colors");
+    selectedColor = color.value;
+        // select quantity choice and add it into variable
+    const quantity = document.querySelector("#quantity");
+    selectedQuantity = quantity.value;
 
-// get the data in selectedProductInfos variable provided user entered required data
-if (selectedColor !== "" && selectedQuantity > 0 && selectedQuantity <= 100) {
-    let selectedProductInfos = {
-        selectedProductId: product._id ,
-        selectedProductColor: selectedColor,
-        selectedProductQuantity: selectedQuantity
-    }
-
-// create variable for message about LS updates
-let messageUpdatesToLS = false;
-// function add to LS selected product with its options id, color and quantity
-
-// save data to local storage
-
-const addProductToLS = () => {
-    
-    // if product and the color are already in LS: amend only quantity
-    let findProduct = productSavedInLS.find((x) => {return x.selectedProductId === selectedProductInfos.selectedProductId && x.selectedProductColor === selectedProductInfos.selectedProductColor});
-    if(findProduct){
-        const total = Number(findProduct.selectedProductQuantity) + Number(selectedProductInfos.selectedProductQuantity);
-        if(total <= 100){
-            // switch message variable to false to display the corresponding message
-            messageUpdatesToLS = false;
-            findProduct.selectedProductQuantity = Number(findProduct.selectedProductQuantity) + Number(selectedProductInfos.selectedProductQuantity);
-            alert(`La quantité du produit ${product.name}, coloris ${selectedColor} a été mise à jour.`);
+    // get the data in selectedProductInfos variable provided user entered required data
+    if (selectedColor !== "" && selectedQuantity > 0 && selectedQuantity <= 100) {
+        let productOptions = {
+            selectedProductId: id,
+            selectedProductColor: selectedColor,
+            selectedProductQuantity: selectedQuantity
         }
-        else{
-            // switch message variable to false to display the corresponding message
-            messageUpdatesToLS = false;
-            alert("Vous pouvez commander maximum 100 unités d'un même article d'une même couleur. Veuillez corriger la quantité souhaitée.");
+        // create variable for message about LS updates
+        let messageUpdatesCart = false;
+
+        // function add selected product with its options id, color and quantity to LS 
+        const addProductToLS = () => {
+                  
+                // if product and the color are already in LS: amend only quantity
+                let findProduct = productSavedInLS.find((x) => {
+                    return x.selectedProductId === productOptions.id && x.selectedProductColor === productOptions.selectedProductColor
+                });
+                if (findProduct) {
+                    const total = Number(findProduct.selectedProductQuantity) + Number(productOptions.selectedProductQuantity);
+
+                    if (total <= 100) {
+                        // switch message variable to false to display the corresponding message
+                        messageUpdatesCart = false;
+                        findProduct.selectedProductQuantity = Number(findProduct.selectedProductQuantity) + Number(productOptions.selectedProductQuantity);
+                        alert(`La quantité du produit ${product.name}, coloris ${selectedColor} a été mise à jour.`);
+                    }
+                    else {
+                        // switch message variable to false to display the corresponding message
+                        messageUpdatesCart = false;
+                        alert("Vous pouvez commander maximum 100 unités d'un même article d'une même couleur. Veuillez corriger la quantité souhaitée.");
+                    }
+                }
+
+                // if product and the color are not yet in LS: add product and its options id, color and quantity into LS
+                else {
+                    // switch message variable to true to display message
+                    messageUpdatesCart = true;
+                    // put options into variable "productSavedInLS"
+                    productSavedInLS.push(productOptions);
+                }
+
+                // transform into JSON and save data in LS with key "productsInCart"
+                localStorage.setItem("productsInCart", JSON.stringify(productSavedInLS))
+            }
+
+            // create variable "productSavedInLS" to save keys and values and transform into JS object
+            let productSavedInLS = JSON.parse(localStorage.getItem("productsInCart"));
+
+            // if LS already has a key "productsInCart"
+            if (productSavedInLS) {
+                addProductToLS(); console.log(productSavedInLS);
+            }
+            // if LS has no key "productsInCart" it is empty
+            else {
+                productSavedInLS = [];
+                addProductToLS(); console.log(productSavedInLS);
+                // switch message variable to false to display the corresponding message
+                messageUpdatesCart = false;
+                alert(`Vous venez d'ajouter votre premier produit dans le panier.`);
+            }
+            // if the variable messageUpdatesCart is true the following message is displayed:
+            if (messageUpdatesCart) {
+                alert(`Le produit ${product.name}, coloris ${selectedColor} a été ajouté au panier.`);
+            }
+
+
+            // if color not selected or quantity not between 1 and 100: display following message:
+            else {
+                alert(`La couleur n'est pas sélectionnée et/ou la quantité n'est pas comprise entre 1 et 100`);
+            }
         }
-    }
-    // if product and the color are not yet in LS: add product and its options id, color and quantity into LS
-    else{
-        // switch message variable to true to display message
-        messageUpdatesToLS = true;
-         // put options into variable "productSavedInLS"
-         productSavedInLS.push(selectedProductInfos);
-    }
-    
-    // transform into JSON and save data in LS with key "productsInCart"
-    localStorage.setItem("productsInCart", JSON.stringify(productSavedInLS))
-}
-
-// create variable "productSavedInLS" to save keys and values and transform into JS object
-let productSavedInLS = JSON.parse(localStorage.getItem("productsInCart"));
-
- // if LS already has a key "productsInCart"
-if(productSavedInLS){
-    addProductToLS();console.log(productSavedInLS);}
-// if LS has no key "productsInCart" it is empty
-else{
-    productSavedInLS = [];
-    addProductToLS(); console.log(productSavedInLS);
-    // switch message variable to false to display the corresponding message
-    messageUpdatesToLS = false;
-    alert(`Vous venez d'ajouter votre premier produit dans le panier.`);
-}
-// if the variable messageUpdatesToLS is true the following message is displayed:
-if(messageUpdatesToLS){
-    alert(`Le produit ${product.name}, coloris ${selectedColor} a été ajouté au panier.`);
-    }
-}
-// if color not selected or quantity not between 1 and 100: display following message:
-else {
-alert(`La couleur n'est pas sélectionnée et/ou la quantité n'est pas comprise entre 1 et 100`);
-}
-});
+    })
 
 // .catch((error) => {
 // console.log("Erreur fetch product.js : l'id du produit est incorrect.", error);
