@@ -1,6 +1,7 @@
-// elements to add on product page - OK
+// elements to add on product page  - OK sauf ligne 4
 let imgElement = document.querySelector(".item__img");
 let titleElement = document.querySelector("#title");
+// let pageTitleElement = document.getElementsByTagName("title"); 
 let priceElement = document.querySelector("#price");
 let descriptionElement = document.querySelector("#description");
 let colorsElement = document.getElementById("colors");
@@ -16,32 +17,32 @@ function getProduct() {
     fetch(`http://localhost:3000/api/products/${id}`)
         .then(response => { if (response.ok) { return response.json(); } })
         .then(product => { displayProduct(product) })
-        .catch(function (error) { alert('une erreur est survenue') });
+        .catch(function (err) { alert('une erreur de connexion à notre catalogue est survenue') });
     // }
 }
 getProduct();
 
-// display title of product page with product name - OK
-document.getElementById("title").innerText = product.name;
-document.title = product.name;
-
 // display colors of the clicked product - OK
 function getColorOptions(product) {
-    console.log(product);
+    console.table(product);
+    // const ColorArray = product.colors;
+    // for (color of colorArray){colorsElement.innerHTML += '<option value ="${color}"> ${color}</option>'}
     for (let x = 0; x < product.colors.length; x++) {
         colorsElement.innerHTML += `<option value="${product.colors[x]}"> 
         ${product.colors[x]}</option>`
     }
 }
 
-// display all elements of the clicked product via API - OK
+//display all elements of the clicked product via API - OK sauf ligne 38
 function displayProduct(product) {
     imgElement.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}"></img>`;
-    titleElement.innerHTML = `<h1 id="title">${product.name}</h1>`;
-    priceElement.innerHTML = `<span id="price">${product.price}</span>`;
-    descriptionElement.innerHTML = `<p id="description">${product.description}</p>`;
+    titleElement.innerHTML = `${product.name}`;
+    // pageIitleElement.innerHTML = `${product.name}`;
+    priceElement.innerHTML = `${product.price}`;
+    descriptionElement.innerHTML = `${product.description}`;
     getColorOptions(product);
 }
+
 
 // save product information to local storage: 
 // select button to add to cart and add event listener
@@ -67,6 +68,9 @@ addToCartBtn.addEventListener("click", (e) => {
         let messageUpdatesCart = false;
 
         // function add selected product with its options id, color and quantity to LS 
+
+
+        // var productName = product.name;
         const addProductToLS = () => {
                   
                 // if product and the color are already in LS: amend only quantity
@@ -75,12 +79,13 @@ addToCartBtn.addEventListener("click", (e) => {
                 });
                 if (findProduct) {
                     const total = Number(findProduct.selectedProductQuantity) + Number(productOptions.selectedProductQuantity);
+                    console.log(total);
 
                     if (total <= 100) {
                         // switch message variable to false to display the corresponding message
                         messageUpdatesCart = false;
                         findProduct.selectedProductQuantity = Number(findProduct.selectedProductQuantity) + Number(productOptions.selectedProductQuantity);
-                        alert(`La quantité du produit ${product.name}, coloris ${selectedColor} a été mise à jour.`);
+                        alert(`La quantité du produit ${titleElement.textContent} coloris ${selectedColor} a été mise à jour.`);
                     }
                     else {
                         // switch message variable to false to display the corresponding message
@@ -118,7 +123,7 @@ addToCartBtn.addEventListener("click", (e) => {
             }
             // if the variable messageUpdatesCart is true the following message is displayed:
             if (messageUpdatesCart) {
-                alert(`Vous venez de rajouter ${selectedQuantity} unités du produit ${product.name}, coloris ${selectedColor} a été ajouté au panier.`);
+                alert(`Vous venez de rajouter ${selectedQuantity} unités du produit ${titleElement.textContent} coloris ${selectedColor} au panier.`);
             }
         }
         // if color not selected or quantity not between 1 and 100: display following message:
