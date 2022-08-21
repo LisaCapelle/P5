@@ -1,7 +1,6 @@
 // elements to add on product page  - OK sauf ligne 4
 let imgElement = document.querySelector(".item__img");
 let titleElement = document.querySelector("#title");
-// let pageTitleElement = document.getElementsByTagName("title"); 
 let priceElement = document.querySelector("#price");
 let descriptionElement = document.querySelector("#description");
 let colorsElement = document.getElementById("colors");
@@ -37,8 +36,8 @@ function getColorOptions(product) {
 function displayProduct(product) {
     imgElement.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}"></img>`;
     titleElement.innerHTML = `${product.name}`;
-    // pageIitleElement.innerHTML = `${product.name}`;
     priceElement.innerHTML = `${product.price}`;
+    document.title = `${product.name}`;
     descriptionElement.innerHTML = `${product.description}`;
     getColorOptions(product);
 }
