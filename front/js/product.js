@@ -53,9 +53,9 @@ function addProduct() {
 
 // 3. créer un objet produit avec clés + variables ci-dessus
 const selectedProduct = {
-    selectedProductId: id,
-    selectedProductColor: selectedColor,
-    selectedProductQuantity: selectedQuantity
+    id: id,
+    color: selectedColor,
+    quantity: selectedQuantity
 } 
 // 4. vérifier que les données entrées sont correctes et si oui les sauvegarder
 if (selectedColor === ""){
@@ -74,10 +74,13 @@ if (selectedColor === ""){
         productSavedInLS = JSON.parse(localStorage.getItem("Cart"))
     }
 
-    let findProduct = productSavedInLS.find((p) => {
+    let findProduct = productSavedInLS.find((product) => {
         console.log(productSavedInLS);
-        return p.selectedProductId === selectedProduct.id && p.selectedProductColor === selectedProduct.selectedProductColor
+        console.log(product.selectedProductId === selectedProduct.id && p.selectedProductColor === selectedProduct.selectedProductColor)
+        return product.id === selectedProduct.id && product.color === selectedProduct.color
     })
+        
+    console.log(findProduct);
     if(!findProduct){
         console.log("pusher le produit sélectionné dans le tableau vide");
         productSavedInLS.push(selectedProduct);
@@ -86,24 +89,21 @@ if (selectedColor === ""){
     }
     else{
         console.log("changer qté");
-        let totalQuantity = Number(findProduct.selectedProductQuantity) + Number(selectedProduct.selectedProductQuantity);
+        let totalQuantity = parseInt(findProduct.quantity) + parseInt(selectedProduct.quantity);
         if (totalQuantity > 100){
             alert("attention maximum 100")
         }
         else{
-            selectedProduct.selectedQuantity = totalQuantity;
+            selectedProduct.quantity = totalQuantity;
+            //remplacer!!! et pas pusher. Soit filtrer pour remplacer un objet (filter) soit findindex pour trouver object puis remplacer l'objet avec index
+            //on peut utiliser un même nom pour le contenu. L'object doit avoir un nom unique pas le contenu.
+            // "how to replace object in an array, based on an index"
             productSavedInLS.push(selectedProduct);
             console.log("ajouter le tableau mis à jour dans le LS")
             localStorage.setItem("Cart", JSON.stringify(productSavedInLS))
+            }
         }
-    }
-};
-
-         
-    //si produit déjà dans panier avec le meme couleur
-    // dans ce cas modifier la quantite et verifier qu'elle ne
-    // depasse pas 100
-    // si produit pas dans le panier l'ajouter
+    };
 
 }
 
@@ -111,124 +111,6 @@ if (selectedColor === ""){
 const addToCartBtn = document.querySelector("#addToCart");
 addToCartBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    addProduct();})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // listen to color options chosen by user
-// color.addEventListener('select', e => {
-//     if (color.value === "") {
-//         alert("Veuillez sélectionner une couleur");
-//     }
-//     else {
-//         const product = {
-//             id: id,
-//             color: color.value,
-//         }
-//         addToCart(product)
-//     }
-// })
-// // listen to quantity options chosen by user
-// quantity.addEventListener('change', e => {
-// eventPreventDefault();
-// console.log(e.value); // Valeur saisie par l'utilisateur.
-// let foundProduct = productsInCart.find(p => p.id == product.id)
-//     if (foundProduct != undefined) { foundProduct.quantity.value;}
-//     else {
-//             product.quantity = 1;
-//             productsInCart.push(product);
-//         }
-//         saveDataToLS(productsInCart);
-//     }
-// )
-// //Là dedans, tu vas chercher la valeur dans le localStorage pour le modèle/couleur si elle existe, et ensuite tu additionnes à la valeur saisie, ce qui te permet de vérifier la quantité totale.
-
-
-// // quantity.addEventListener('input', e => {
-// //     if (quantity.value === 0) {
-// //         alert("Veuillez indiquer la quantité voulue, entre 1 et 100");
-// //     }
-// //     else if (quantity.value > 100) {
-// //         alert("Maximum 100 produits par commande");
-// //     }
-// //     else if (quantity.value > 0 && quantity.value <= 100) {
-// //         const product = {
-// //             id: id,
-// //             quantity: quantity.value,
-// //         }
-// //         addToCart(product)
-// //     }
-// // })
-// // OU BIEN FAUT-IL REMPLACER LES 2 PREMIERS PAR 1 SEUL D'ECOUTE DU BOUTON D'AJOUT AU PANIER???
-// // addToCartBtn.addEventListener('click', e => {
-// //     if (color.value === "") {
-// //         alert("Veuillez sélectionner une couleur");}
-// //     else if (quantity.value === 0) {
-// //             alert("Veuillez indiquer la quantité voulue, entre 1 et 100");}
-// //     else if (quantity.value > 100){
-// //         alert("Maximum 100 produits par commande");}
-// //     else if (quantity.value > 0 && quantity.value <= 100) {
-// //             const product = {
-// //             id: id,
-// //             color: color.value,
-// //             quantity: quantity.value,
-// //         }
-// //         addToCart(product)
-// //     } 
-// // })
-
-// }
-// // get data from local storage
-// function getDataFromLS() {
-//     let productsInCart = localStorage.getItem('productsInCart');
-//     if (productsInCart == null) { return []; }
-//     else { return JSON.parse(productsInCart); }
-// }
-
-// // add product to cart
-// function addToCart(product) {
-//     let productsInCart = getDataFromLS();
-//     // check if product already in cart, if so change quantity, if not add product to cart
-//     let foundProduct = productsInCart.find(p => p.id == product.id)
-//     if (foundProduct != undefined) { foundProduct.quantity.value;
-//     }
-//     else {
-//         product.quantity = 1;
-//         productsInCart.push(product);
-//     }
-//     saveDataToLS(productsInCart);
-// }
-
-
-
-
-// // A SUPPRIMER: get data of the seleted product
-// // const getSelectedProduct = id => {
-// //     const selectedColor = colorsElement.options[colorsElement.selectedIndex].value;
-// //     const selectedProductInfo = {
-// //         id:id,
-// //         color:selectedColor,
-// //         quantity: + quantityElement.value,
-// //     };
-// //     return selectedProductInfo;
-// }
+    addProduct();
+    }
+)
