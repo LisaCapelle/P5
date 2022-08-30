@@ -1,5 +1,6 @@
-// A. Affichage du produit sélectionné
-// éléments à ajouter à la page produits - OK 
+// A. Affichage du produit sélectionné - OK
+
+// éléments à ajouter à la page produits
 let imgElement = document.querySelector(".item__img");
 let titleElement = document.querySelector("#title");
 let priceElement = document.querySelector("#price");
@@ -7,12 +8,12 @@ let descriptionElement = document.querySelector("#description");
 let colorsElement = document.getElementById("colors");
 let quantityElement = document.querySelector("#quantity");
 
-// récupérer l'ID du produit cliqué dans son URL - OK
+// récupérer l'ID du produit cliqué dans son URL
 const pageString = window.location.search;
 const urlParams = new URLSearchParams(pageString);
 const id = urlParams.get("id");
 
-// récupérer les données du produit cliqué dans l'API - OK
+// récupérer les données du produit cliqué dans l'API
 function getProduct() {
     // if(id !== null){
     fetch(`http://localhost:3000/api/products/${id}`)
@@ -23,16 +24,16 @@ function getProduct() {
 }
 getProduct();
 
-// afficher les couleurs du produit cliqué - OK
+// afficher les couleurs du produit cliqué
 function getColorOptions(product) {
-    console.table(product);
+    console.log(product);
     for (let i = 0; i < product.colors.length; i++) {
         colorsElement.innerHTML += `<option value="${product.colors[i]}"> 
         ${product.colors[i]}</option>`
     }
 }
 
-// afficher tous les éléments du produit cliqué - OK
+// afficher tous les éléments du produit cliqué
 function displayProduct(product) {
     imgElement.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}"></img>`;
     titleElement.innerHTML = `${product.name}`;
@@ -43,6 +44,7 @@ function displayProduct(product) {
 }
 
 //B. créer la fonction d'ajouter le produit au Local Storage
+
 function addProduct() {
 
 // 1. Sélectionner le choix de couleur et le mettre dans une variable
@@ -55,58 +57,63 @@ function addProduct() {
 const selectedProduct = {
     id: id,
     color: selectedColor,
-    quantity: selectedQuantity
+    quantity: selectedQuantity,
 } 
-// 4. vérifier que les données entrées sont correctes et si oui les sauvegarder
+// 4. vérifier que les données entrées correctement et si oui les sauvegarder
 if (selectedColor === ""){
-    alert("veuillez choisir une couleur")
-}else if(selectedQuantity < 0 || selectedQuantity > 100){
-    alert("veuillez saisir qté entre 1 et 100")
+    alert("Veuillez choisir une couleur")
+}else if(selectedQuantity <= 0 || selectedQuantity > 100){
+    alert("Veuillez saisir une quantité entre 1 et 100, 100 étant la quantité maximum par produit")
 }else{
-    let productSavedInLS;
+    let contentInCart;
     localStorage.getItem("Cart");
     console.log(localStorage.getItem("Cart"));
 
+    // si localStorage encore vide renvoyer objet produit vide
     if (localStorage.getItem("Cart") == null){
-        productSavedInLS = [];
+        contentInCart = [];
     }
+    // si localStorage avec du contenu renvoyer le contenu parsé
     else {
-        productSavedInLS = JSON.parse(localStorage.getItem("Cart"))
+        contentInCart = JSON.parse(localStorage.getItem("Cart"));
+        console.log(JSON.parse(localStorage.getItem("Cart")));
     }
 
-    let findProduct = productSavedInLS.find((product) => {
-        console.log(productSavedInLS);
-        console.log(product.selectedProductId === selectedProduct.id && p.selectedProductColor === selectedProduct.selectedProductColor)
+    let findProduct = contentInCart.find((product) => {
+        // console.log(contentInCart);
+        console.log(product.id === selectedProduct.id && product.color === selectedProduct.color);
         return product.id === selectedProduct.id && product.color === selectedProduct.color
     })
-        
     console.log(findProduct);
+    
     if(!findProduct){
-        console.log("pusher le produit sélectionné dans le tableau vide");
-        productSavedInLS.push(selectedProduct);
+        contentInCart.push(selectedProduct);
+        console.log(contentInCart);
         console.log("ajouter le tableau mis à jour dans le LS")
-        localStorage.setItem("Cart", JSON.stringify(productSavedInLS))
+        localStorage.setItem("Cart", JSON.stringify(contentInCart))
     }
     else{
-        console.log("changer qté");
+        console.log("test");
+        // modifier la quantité dans l'objet produit puis mettre à jour cette donnée dans le local Storage
         let totalQuantity = parseInt(findProduct.quantity) + parseInt(selectedProduct.quantity);
+        console.log(findProduct.quantity);
         if (totalQuantity > 100){
             alert("attention maximum 100")
         }
         else{
             selectedProduct.quantity = totalQuantity;
             //remplacer!!! et pas pusher. Soit filtrer pour remplacer un objet (filter) soit findindex pour trouver object puis remplacer l'objet avec index
-            //on peut utiliser un même nom pour le contenu. L'object doit avoir un nom unique pas le contenu.
             // "how to replace object in an array, based on an index"
-            productSavedInLS.push(selectedProduct);
+            contentInCart.push(selectedProduct);
+            console.log(contentInCart);
+            const result = contentInCart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
+            console.log(result);
             console.log("ajouter le tableau mis à jour dans le LS")
-            localStorage.setItem("Cart", JSON.stringify(productSavedInLS))
+            localStorage.setItem("Cart", JSON.stringify(result))
             }
         }
     };
-
 }
-
 // C. Sélectionner le bouton d'ajout au panier et y rajouter Event Listener pour exécuter la fonction au clic
 const addToCartBtn = document.querySelector("#addToCart");
 addToCartBtn.addEventListener("click", (e) => {
