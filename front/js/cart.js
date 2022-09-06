@@ -65,7 +65,7 @@ puisqu'il est asynchrone sinon les produits ne pourront pas s'afficher correctem
                    
             // actualiser le localStorage
             let findProduct = contentInCart.find((product)=>{
-
+            //console.log( id === id &&  color === color);
             //return ...
             })
             // methode map ??? sinon filtrer le tableau, puis pusher, puis enlever 

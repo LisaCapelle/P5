@@ -65,6 +65,7 @@ if (selectedColor === ""){
 }else if(selectedQuantity <= 0 || selectedQuantity > 100){
     alert("Veuillez saisir une quantité entre 1 et 100, 100 étant la quantité maximum par produit")
 }else{
+    alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier`);
     let contentInCart;
     localStorage.getItem("Cart");
     console.log(localStorage.getItem("Cart"));
@@ -103,7 +104,6 @@ if (selectedColor === ""){
         else{
             selectedProduct.quantity = totalQuantity;
             //remplacer!!! et pas pusher. Soit filtrer pour remplacer un objet (filter) soit findindex pour trouver object puis remplacer l'objet avec index
-            // "how to replace object in an array, based on an index"
             contentInCart.push(selectedProduct);
             console.log(contentInCart);
             const result = contentInCart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
