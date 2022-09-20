@@ -27,6 +27,8 @@ console.log(cart);
 
 // tableau temporaire pour stocker le prix des produits
 let temporaryArray = [];
+// TOUT S'Y DEDOUBLE ET L'AFFICHAGE AUSSI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+console.log(temporaryArray);
 // quantité et prix totaux
 let totalQty = 0;
 let totalPr = 0;
@@ -157,24 +159,15 @@ let emailInput = (inputValue) => {
         isValid ? displayMessage(emailErrorMsg, "") : displayMessage(emailErrorMsg, emailErrorMsgText)
     }
 }
-//ESSAI DE FETCH LOCALISE//
-
-
-
-//FAIRE UN FETCH - ICI D'ABORD RECUPERER L'ID ET COULEUR DES PRODUITS DANS PANIER PUIS FAIRE FETCH POUR CES PRODUITS SEULEMENT
-
-
-/* 4. faire un fetch des données produits (image, alt, nom, prix) et tout mettre à l'intérieur du fetch 
-puisqu'il est asynchrone pour que les produits s'affichent correctement dans le panier*/
-
-
-cart.forEach((productObj) => { 
-  let id = productObj.id;
-  let color = productObj.color;
-  console.log(id);
-  console.log(color);
-    
-  fetch(`http://localhost:3000/api/products/${id}${color}`)
+//ESSAI DE FETCH LOCALISE: ICI D'ABORD RECUPERER L'ID ET COULEUR DES PRODUITS DANS PANIER PUIS FAIRE FETCH POUR CES PRODUITS SEULEMENT
+// PROBLEME DE BOUCLE
+// cart.forEach((productObj) => { 
+//   let id = productObj.id;
+//   let color = productObj.color;
+//   console.log(id);
+//   console.log(color);
+/// PROBLEME POUR DEFINIR LE FETCH SUR LES PRODUITS AVEC ID ET COULEUR DU PANIER ${id}+${color} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  fetch(`http://localhost:3000/api/products/`)
   .then(response => {
       if (response.ok) { 
         console.log(response);
@@ -197,7 +190,8 @@ cart.forEach((productObj) => {
           const productInfo = data.find((element) => element._id === productObj.id);
           const newObject = {...productObj, price: productInfo.price};
           temporaryArray.push(newObject);
-
+          // PROBLEME DE DEDOUBLEMENT TEMPORARY ARRAY !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          console.log(temporaryArray);
           // get total quantity + total price
           totalQty = totalQty + Number(newObject.quantity);
           // console.log(newObject.price);
@@ -219,8 +213,8 @@ cart.forEach((productObj) => {
               </div>
           </div>
           </article>`;             
-      }) // fin de forEach ligne 104
-      // console.log(temporaryArray);
+      }) // fin de forEach 
+
       // display the page
       cartItems.innerHTML = str;
       totalQuantity.innerText = totalQty;
@@ -231,14 +225,20 @@ cart.forEach((productObj) => {
       // console.log(qtyInputs);
       let deleteItems = document.querySelectorAll(".deleteItem");
 
-
       // handle quantity changes  
       handleChange(qtyInputs, contentInCart);
       // delete a product
       handleDelete(deleteItems, contentInCart);
 
-  // PARTIE FORMULAIRE
-  // 1. sélectionner les balises à remplir et les 5 balises pour les messages d'erreur
+
+})//fin du deuxieme then
+.catch((error) => {alert("Une erreur s'est produite")
+})
+
+// })  fin de la boucle pour le fetch plus modeste
+
+// PARTIE FORMULAIRE
+  // sélectionner les balises à remplir et les balises pour les messages d'erreur
   let firstName = document.querySelector("#firstName");
   let lastName = document.querySelector("#lastName");
   let address = document.querySelector("#address");
@@ -251,24 +251,26 @@ cart.forEach((productObj) => {
   let cityErrorMsg = document.querySelector("#cityErrorMsg");
   let emailErrorMsg = document.querySelector("#emailErrorMsg");
 
-  // 2. déclarer les fonctions qui nécessitent les données du fetch
-  const isAllValid = () => {
+// vérifier si tous les champs sont validés
+  let isAllValid = () => {
       if(nameRegex.test(firstName.value) && nameRegex.test(lastName.value) && addressRegex.test(address.value) && cityRegex.test(city.value) && emailRegex.test(email.value)) {
       return true;
       }else{
       return false;
       }
   }
-
-  const inputsData = () => {
+// vérifier toutes les données saisies dans le formulaire, une par une
+const inputsData = () => {
       firstNameInput(firstName.value);
       lastNameInput(lastName.value);
       addressInput(address.value);
       cityInput(city.value);
       emailInput(email.value);
+      console.log(inputsData.length);
   }
-
+  
   const confirmation = () => {
+    
       // envoyer les données à l'API
       fetch("http://localhost:3000/api/products/order", {
           method: "POST",
@@ -278,15 +280,14 @@ cart.forEach((productObj) => {
       })
       .then((res) => res.json())
       .then((data) => console.log(data.orderId))
-
       // rédiriger à la page de confirmation
-  //document.location.href=".../confirmation.html"
+        //document.location.href=".../confirmation.html"
       // supprimer le localStorage
-  // localStorage.clear();
+        // localStorage.clear();
       console.log("youpi!")
   } 
 
-  // 3. vérifier les inputs un par un
+  // vérifier les inputs un par un
   firstName.addEventListener('blur', (e) => {
       firstNameInput(e.target.value)});
   lastName.addEventListener('blur', (e) => {
@@ -298,19 +299,13 @@ cart.forEach((productObj) => {
   email.addEventListener('blur', (e) => {
       emailInput(e.target.value)})
 
-  // 4. fonction finale à la fin: au clin sur "commander"
+  // au clic sur le bouton "commander" exécuter les fonctions 
   orderBtn.addEventListener("click", (e) => {
-      // empêcher le comportement par défaut
-      e.preventDefault();
-      filledForm = e.target.value;
-      console.log(filledForm);
-      isAllValid() ? confirmation() : inputsData();
-      
+    // empêcher le comportement par défaut
+    e.preventDefault();
+    filledForm = e.target.value;
+    console.log(filledForm);
+    if (isAllValid = true) {confirmation()
+    }else{inputsData()
+    }      
   })
-
-})//fin du deuxieme then
-.catch((error) => {alert("Une erreur s'est produite")
-})
-
-})  
-
