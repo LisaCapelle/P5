@@ -21,7 +21,7 @@ let totalPrice = document.querySelector("#totalPrice");
 // string pour l'injection dans le HTML et 
 let str = "";
 
-// AAA récupérer les éléments du panier
+// récupérer les éléments du panier
 let cart;
 console.log(cart);
 
@@ -155,12 +155,20 @@ let emailInput = (inputValue) => {
     }
 }
 // si le panier n'est ni null ni vide faire un fetch sur les produits du panier pour compléter les informations manquantes
+cart = localStorage.getItem("Cart");
 if (cart == null){
+    cart = [];
     alert("Le panier n'existe pas");
+    let cartOrderElement = document.querySelector('.cart__order');
+    console.log(cartOrderElement);
+    cartOrderElement.style.visibility='hidden';
 }else{
     cart = JSON.parse(localStorage.getItem("Cart"));
     if(cart.length == 0){
         alert("Votre panier est vide")
+            let cartOrderElement = document.querySelector('.cart__order');
+            console.log(cartOrderElement);
+            cartOrderElement.style.visibility='hidden';
     }else{
         cart.forEach((productObj) => {
             let id = productObj.id;
@@ -208,7 +216,11 @@ if (cart == null){
             .then(() => {
         
             // ICI RAJOUTER LES EVENEMENTS SUR SUPPRESSION ET MODIF QTES 
-            
+            //sélectionner toutes les balises input qui permettent de renseigner la quantité & supprimer
+            let qtyInputs = document.querySelectorAll(".itemQuantity");
+            // console.log(qtyInputs);
+            let deleteItems = document.querySelectorAll(".deleteItem");
+
             // handle quantity changes  
             handleChange(qtyInputs, cart);
             // delete a product
@@ -218,64 +230,8 @@ if (cart == null){
     }
 }
 
-
-//   fetch(`http://localhost:3000/api/products/`)
-//   .then(response => {
-//       if (response.ok) { 
-//         console.log(response);
-//           return response.json(); 
-//       }
-//   })
-//   .then((data) => {
-//       // console.log(data);
-//       // déclarer une variable pour y récupérer les données du local storage pour les produits contenus dans le panier (id, couleur, qté)
-//       let contentInCart = JSON.parse(localStorage.getItem("Cart"));
-//           if(contentInCart.length === 0){
-//             let cartOrderElement = document.querySelector('.cart__order');
-//             console.log(cartOrderElement);
-//             cartOrderElement.style.visibility='hidden';
-//           }
-      
-//       // faire une boucle pour insérer les informations de chacun des produits contenus dans le panier dans le HTML
-//       contentInCart.forEach((productObj, index)=>{
-          
-//           const productInfo = data.find((element) => element._id === productObj.id);
-//           const newObject = {...productObj, price: productInfo.price};
-//           temporaryArray.push(newObject);
-//           console.log(temporaryArray);
-//           // get total quantity + total price
-//           totalQty = totalQty + Number(newObject.quantity);
-//           // console.log(newObject.price);
-//           let subTotal = Number(newObject.price) * Number(newObject.quantity);
-//           // console.log(subTotal);
-//           totalPr = totalPr + subTotal;
-            
-//       }) 
-
-//       // display the page
-  
-//       totalQuantity.innerText = totalQty;
-//       totalPrice.innerText = totalPr;
-
-//       // sélectionner toutes les balises input qui permettent de renseigner la quantité & supprimer
-//       let qtyInputs = document.querySelectorAll(".itemQuantity");
-//       // console.log(qtyInputs);
-//       let deleteItems = document.querySelectorAll(".deleteItem");
-
-//       // handle quantity changes  
-//       handleChange(qtyInputs, contentInCart);
-//       // delete a product
-//       handleDelete(deleteItems, contentInCart);
-
-
-// })//fin du deuxieme then
-// .catch((error) => {alert("Une erreur s'est produite")
-// })
-
-// })  fin de la boucle pour le fetch plus étroit
-
-
 // PARTIE FORMULAIRE
+  // VARIABLES
   // sélectionner les balises à remplir et les balises pour les messages d'erreur
   let firstName = document.querySelector("#firstName");
   let lastName = document.querySelector("#lastName");
@@ -289,8 +245,9 @@ if (cart == null){
   let cityErrorMsg = document.querySelector("#cityErrorMsg");
   let emailErrorMsg = document.querySelector("#emailErrorMsg");
 
+// FONCTIONS
 // vérifier si tous les champs sont validés
-  let isAllValid = () => {
+const isAllValid = () => {
       if(nameRegex.test(firstName.value) && nameRegex.test(lastName.value) && addressRegex.test(address.value) && cityRegex.test(city.value) && emailRegex.test(email.value)) {
       return true;
       }else{
@@ -304,27 +261,27 @@ const inputsData = () => {
       addressInput(address.value);
       cityInput(city.value);
       emailInput(email.value);
-      console.log(inputsData.length);
   }
   
-  // envoyer les données à l'API, rédiriger vers la page de confirmation, supprimer le local storage
-  const confirmation = () => {
+// envoyer les données à l'API, rédiriger vers la page de confirmation, supprimer le local storage
+const confirmation = (dataToSend) => {
     
-      // envoyer les données à l'API
-      fetch("http://localhost:3000/api/products/order", {
-          method: "POST",
-          body: JSON.stringify(filledForm),
-          headers: {"content-type": "application/json"
-          }
-      })
-      .then((res) => res.json())
-      .then((data) => console.log(data.orderId))
-      // rédiriger à la page de confirmation
-        //document.location.href=".../confirmation.html"
-      // supprimer le localStorage
-        // localStorage.clear();
-      console.log("youpi!")
-  } 
+// envoyer les données à l'API
+fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify(dataToSend),
+    headers: {"content-type": "application/json"
+    }
+})
+    .then((res) => res.json())
+    .then((data) => {
+        console.log(data.orderId);
+        // rédiriger à la page de confirmation
+        document.location.href=`confirmation.html?id=${data.orderId}`
+        // supprimer le localStorage
+        localStorage.clear();
+        })
+    } 
 
   // vérifier les inputs un par un
   firstName.addEventListener('blur', (e) => {
@@ -342,7 +299,18 @@ const inputsData = () => {
   orderBtn.addEventListener("click", (e) => {
     // empêcher le comportement par défaut
     e.preventDefault();
+    let productIds = cart.map((element) => {return element.id})
+    console.log(productIds);
+    let dataToSend = {
+                        contact: {
+                                    firstName:firstName.value,
+                                    lastName:lastName.value,
+                                    address:address.value,
+                                    city:city.value,
+                                    email:email.value,
+                        },
+                        products: productIds,
+    }
 
-    // filledForm = e.target.value;
-    isAllValid ? confirmation() : inputsData()  
+    isAllValid ? confirmation(dataToSend) : inputsData()  
   })

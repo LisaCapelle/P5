@@ -65,33 +65,43 @@ if (selectedColor === ""){
 }else if(selectedQuantity <= 0 || selectedQuantity > 100){
     alert("Veuillez saisir une quantité entre 1 et 100, 100 étant la quantité maximum par produit")
 }else{
-    alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier`);
-    let contentInCart;
+    // vérifier la quantité totale si le produit déjà dans panier et que le total de la qte rajoutee ne depasse pas les 100
+    let cart;
     localStorage.getItem("Cart");
     console.log(localStorage.getItem("Cart"));
 
     // si localStorage encore vide renvoyer objet produit vide
     if (localStorage.getItem("Cart") == null){
-        contentInCart = [];
+        cart = [];
+        alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier`);
     }
     // si localStorage avec du contenu renvoyer le contenu parsé
     else {
-        contentInCart = JSON.parse(localStorage.getItem("Cart"));
-        console.log(JSON.parse(localStorage.getItem("Cart")));
+        cart = JSON.parse(localStorage.getItem("Cart"));
+        let findProduct = cart.find((product) => {
+            return product.id === selectedProduct.id && product.color === selectedProduct.color
+        })
+        console.log(findProduct.quantity);
+        console.log(selectedQuantity);
+        let newQuantity = selectedQuantity + findProduct.quantity;
+        let maximumUntilStop = 100 - findProduct.quantity;
+        if (newQuantity > 100){
+            alert(`Vous devez rajouter encore maximum ${maximumUntilStop} produits, la quantité étant limitée à 100 par produit/couleur`);
+        }else{
+            alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier`)
+        }
     }
 
-    let findProduct = contentInCart.find((product) => {
-        // console.log(contentInCart);
+    let findProduct = cart.find((product) => {
         console.log(product.id === selectedProduct.id && product.color === selectedProduct.color);
         return product.id === selectedProduct.id && product.color === selectedProduct.color
     })
-    console.log(findProduct);
+    console.log(findProduct.quantity);
     
     if(!findProduct){
-        contentInCart.push(selectedProduct);
-        console.log(contentInCart);
-        console.log("ajouter le tableau mis à jour dans le LS")
-        localStorage.setItem("Cart", JSON.stringify(contentInCart))
+        cart.push(selectedProduct);
+        console.log(cart);
+        localStorage.setItem("Cart", JSON.stringify(cart))
     }
     else{
         console.log("test");
@@ -104,9 +114,9 @@ if (selectedColor === ""){
         else{
             selectedProduct.quantity = totalQuantity;
             //remplacer!!! et pas pusher. Soit filtrer pour remplacer un objet (filter) soit findindex pour trouver object puis remplacer l'objet avec index
-            contentInCart.push(selectedProduct);
-            console.log(contentInCart);
-            const result = contentInCart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
+            cart.push(selectedProduct);
+            console.log(cart);
+            const result = cart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
             console.log(result);
             console.log("ajouter le tableau mis à jour dans le LS")
             localStorage.setItem("Cart", JSON.stringify(result))
