@@ -22,13 +22,13 @@ let totalPrice = document.querySelector("#totalPrice");
 let str = "";
 
 // AAA récupérer les éléments du panier
-let cart = JSON.parse(localStorage.getItem("Cart"));
+let cart;
 console.log(cart);
 
-// tableau temporaire pour stocker le prix des produits
-let temporaryArray = [];
-// TOUT S'Y DEDOUBLE ET L'AFFICHAGE AUSSI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-console.log(temporaryArray);
+// // tableau temporaire pour stocker le prix des produits
+// let temporaryArray = [];
+// console.log(temporaryArray);
+
 // quantité et prix totaux
 let totalQty = 0;
 let totalPr = 0;
@@ -39,7 +39,7 @@ let totalPr = 0;
 document.title = "Page Panier";
 
 // changer la quantité et recalculer le total
-const handleChange = (qtyInputs, contentInCart) => {
+const handleChange = (qtyInputs, cart) => {
     // ajouter EventListener pour chaque input l'un après l'autre (forEach)
     console.log(qtyInputs);
     qtyInputs.forEach((input, index) =>{
@@ -59,20 +59,20 @@ const handleChange = (qtyInputs, contentInCart) => {
                 /* remplacer la quantité par la quantité modifiée (variable value) + 
                 mettre à jour cette quantité dans local Storage + modifier 
                 l'affichage de la page en la rechargeant*/
-                for (let i = 0; i< contentInCart.length; i++){
-                    if(contentInCart[i].id == id && contentInCart[i].color == color){
-                    contentInCart[i].quantity = value;
-                    localStorage.setItem("Cart", JSON.stringify(contentInCart));
+                for (let i = 0; i< cart.length; i++){
+                    if(cart[i].id == id && cart[i].color == color){
+                    cart[i].quantity = value;
+                    localStorage.setItem("Cart", JSON.stringify(cart));
                     cartItems.innerHTML = "";
                     location.reload();
                     }
                 }
             }
-        }) // fin du addEventListener
-    }) // fin du forEach 
+        }) // fin du addEventListener handleChange
+    }) // fin du forEach handleChange
 }
 // supprimer un produit et recalculer le total
-const handleDelete = (deleteItems, contentInCart) => {
+const handleDelete = (deleteItems, cart) => {
     // ajouter EventListener pour chaque bouton l'un après l'autre (forEach)
     deleteItems.forEach((deleteItem, index) =>{
         deleteItem.addEventListener('click', (e) => {
@@ -84,18 +84,13 @@ const handleDelete = (deleteItems, contentInCart) => {
             let color = e.currentTarget.closest(".cart__item").dataset.color;
 
             // filtrer et supprimer le produit concerné
-            const newContentInCart = contentInCart.filter((productObj)=>{ return !(id === productObj.id && color === productObj.color)})
-            console.log(newContentInCart);
+            const newCart = cart.filter((productObj)=>{ return !(id === productObj.id && color === productObj.color)})
+            console.log(newCart);
             // écraser l'ancien localStorage avec la maj et recharger la page
-            localStorage.setItem("Cart", JSON.stringify(newContentInCart));
-            console.log(newContentInCart.length);
+            localStorage.setItem("Cart", JSON.stringify(newCart));
+            console.log(newCart.length);
             cartItems.innerHTML = "";
-            location.reload();
-            
-            // if(newContentInCart.length === 0){
-               //let cartOrderElement = document.querySelector('.cart__order');
-               //document.getElementsByClassName(".cart__order").style.visibility = "hidden";
-            // }                        
+            location.reload();                  
         })
     })
 };
@@ -159,83 +154,126 @@ let emailInput = (inputValue) => {
         isValid ? displayMessage(emailErrorMsg, "") : displayMessage(emailErrorMsg, emailErrorMsgText)
     }
 }
-//ESSAI DE FETCH LOCALISE: ICI D'ABORD RECUPERER L'ID ET COULEUR DES PRODUITS DANS PANIER PUIS FAIRE FETCH POUR CES PRODUITS SEULEMENT
-// PROBLEME DE BOUCLE
-// cart.forEach((productObj) => { 
-//   let id = productObj.id;
-//   let color = productObj.color;
-//   console.log(id);
-//   console.log(color);
-/// PROBLEME POUR DEFINIR LE FETCH SUR LES PRODUITS AVEC ID ET COULEUR DU PANIER ${id}+${color} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  fetch(`http://localhost:3000/api/products/`)
-  .then(response => {
-      if (response.ok) { 
-        console.log(response);
-          return response.json(); 
-      }
-  })
-  .then((data) => {
-      // console.log(data);
-      // déclarer une variable pour y récupérer les données du local storage pour les produits contenus dans le panier (id, couleur, qté)
-      let contentInCart = JSON.parse(localStorage.getItem("Cart"));
-          if(contentInCart.length === 0){
-            let cartOrderElement = document.querySelector('.cart__order');
-            console.log(cartOrderElement);
-            cartOrderElement.style.visibility='hidden';
-          }
+// si le panier n'est ni null ni vide faire un fetch sur les produits du panier pour compléter les informations manquantes
+if (cart == null){
+    alert("Le panier n'existe pas");
+}else{
+    cart = JSON.parse(localStorage.getItem("Cart"));
+    if(cart.length == 0){
+        alert("Votre panier est vide")
+    }else{
+        cart.forEach((productObj) => {
+            let id = productObj.id;
+            let color = productObj.color;
+            let quantity = productObj.quantity;
+            console.log(id);
+            console.log(color);
+            console.log(quantity);
+            fetch(`http://localhost:3000/api/products/${id}`)
+            .then(response => {
+                if (response.ok) { 
+                    return response.json(); 
+                }
+            })
+            .then((data) => {
+        
+            console.log(data);
+        
+            str = cartItems.innerHTML;
+            str += `
+            <article class="cart__item" data-id="${productObj.id}" data-color="${productObj.color}">
+            <div class="cart__item__img"><img src="${data.imageUrl}" alt="${data.altTxt}"></div>
+            <div class="cart__item__content">
+                <div class="cart__item__content__description">
+                    <h2>${data.name}</h2><p>${productObj.color}</p><p>${data.price}</p>
+                </div>
+                <div class="cart__item__content__settings">
+                    <div class="cart__item__content__settings__quantity">
+                    <p>Qté : </p><input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productObj.quantity}">
+                </div>
+                <div class="cart__item__content__settings__delete"><p class="deleteItem">Supprimer</p></div>
+                </div>
+            </div>
+            </article>`; 
+            cartItems.innerHTML = str;
+            
+            totalQty = totalQty + Number(productObj.quantity);
+            let subTotal = Number(data.price) * Number(productObj.quantity);
+            totalPr = totalPr + subTotal;
+        
+            totalQuantity.innerText = totalQty;
+            totalPrice.innerText = totalPr;
+            
+            })
+            .then(() => {
+        
+            // ICI RAJOUTER LES EVENEMENTS SUR SUPPRESSION ET MODIF QTES 
+            
+            // handle quantity changes  
+            handleChange(qtyInputs, cart);
+            // delete a product
+            handleDelete(deleteItems, cart);
+            })
+        })
+    }
+}
+
+
+//   fetch(`http://localhost:3000/api/products/`)
+//   .then(response => {
+//       if (response.ok) { 
+//         console.log(response);
+//           return response.json(); 
+//       }
+//   })
+//   .then((data) => {
+//       // console.log(data);
+//       // déclarer une variable pour y récupérer les données du local storage pour les produits contenus dans le panier (id, couleur, qté)
+//       let contentInCart = JSON.parse(localStorage.getItem("Cart"));
+//           if(contentInCart.length === 0){
+//             let cartOrderElement = document.querySelector('.cart__order');
+//             console.log(cartOrderElement);
+//             cartOrderElement.style.visibility='hidden';
+//           }
       
-      // faire une boucle pour insérer les informations de chacun des produits contenus dans le panier dans le HTML
-      contentInCart.forEach((productObj, index)=>{
+//       // faire une boucle pour insérer les informations de chacun des produits contenus dans le panier dans le HTML
+//       contentInCart.forEach((productObj, index)=>{
           
-          const productInfo = data.find((element) => element._id === productObj.id);
-          const newObject = {...productObj, price: productInfo.price};
-          temporaryArray.push(newObject);
-          // PROBLEME DE DEDOUBLEMENT TEMPORARY ARRAY !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          console.log(temporaryArray);
-          // get total quantity + total price
-          totalQty = totalQty + Number(newObject.quantity);
-          // console.log(newObject.price);
-          let subTotal = Number(newObject.price) * Number(newObject.quantity);
-          // console.log(subTotal);
-          totalPr = totalPr + subTotal;
-          str += `
-          <article class="cart__item" data-id="${productObj.id}" data-color="${productObj.color}">
-          <div class="cart__item__img"><img src="${productInfo.imageUrl}" alt="${productInfo.altTxt}"></div>
-          <div class="cart__item__content">
-              <div class="cart__item__content__description">
-                  <h2>${productInfo.name}</h2><p>${productObj.color}</p><p>${productInfo.price}</p>
-              </div>
-              <div class="cart__item__content__settings">
-                  <div class="cart__item__content__settings__quantity">
-                  <p>Qté : </p><input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productObj.quantity}">
-              </div>
-              <div class="cart__item__content__settings__delete"><p class="deleteItem">Supprimer</p></div>
-              </div>
-          </div>
-          </article>`;             
-      }) // fin de forEach 
+//           const productInfo = data.find((element) => element._id === productObj.id);
+//           const newObject = {...productObj, price: productInfo.price};
+//           temporaryArray.push(newObject);
+//           console.log(temporaryArray);
+//           // get total quantity + total price
+//           totalQty = totalQty + Number(newObject.quantity);
+//           // console.log(newObject.price);
+//           let subTotal = Number(newObject.price) * Number(newObject.quantity);
+//           // console.log(subTotal);
+//           totalPr = totalPr + subTotal;
+            
+//       }) 
 
-      // display the page
-      cartItems.innerHTML = str;
-      totalQuantity.innerText = totalQty;
-      totalPrice.innerText = totalPr;
+//       // display the page
+  
+//       totalQuantity.innerText = totalQty;
+//       totalPrice.innerText = totalPr;
 
-      // sélectionner toutes les balises input qui permettent de renseigner la quantité & supprimer
-      let qtyInputs = document.querySelectorAll(".itemQuantity");
-      // console.log(qtyInputs);
-      let deleteItems = document.querySelectorAll(".deleteItem");
+//       // sélectionner toutes les balises input qui permettent de renseigner la quantité & supprimer
+//       let qtyInputs = document.querySelectorAll(".itemQuantity");
+//       // console.log(qtyInputs);
+//       let deleteItems = document.querySelectorAll(".deleteItem");
 
-      // handle quantity changes  
-      handleChange(qtyInputs, contentInCart);
-      // delete a product
-      handleDelete(deleteItems, contentInCart);
+//       // handle quantity changes  
+//       handleChange(qtyInputs, contentInCart);
+//       // delete a product
+//       handleDelete(deleteItems, contentInCart);
 
 
-})//fin du deuxieme then
-.catch((error) => {alert("Une erreur s'est produite")
-})
+// })//fin du deuxieme then
+// .catch((error) => {alert("Une erreur s'est produite")
+// })
 
-// })  fin de la boucle pour le fetch plus modeste
+// })  fin de la boucle pour le fetch plus étroit
+
 
 // PARTIE FORMULAIRE
   // sélectionner les balises à remplir et les balises pour les messages d'erreur
@@ -269,6 +307,7 @@ const inputsData = () => {
       console.log(inputsData.length);
   }
   
+  // envoyer les données à l'API, rédiriger vers la page de confirmation, supprimer le local storage
   const confirmation = () => {
     
       // envoyer les données à l'API
@@ -299,13 +338,11 @@ const inputsData = () => {
   email.addEventListener('blur', (e) => {
       emailInput(e.target.value)})
 
-  // au clic sur le bouton "commander" exécuter les fonctions 
+  // exécution des commandes au clic sur bouton "envoyer" 
   orderBtn.addEventListener("click", (e) => {
     // empêcher le comportement par défaut
     e.preventDefault();
-    filledForm = e.target.value;
-    console.log(filledForm);
-    if (isAllValid = true) {confirmation()
-    }else{inputsData()
-    }      
+
+    // filledForm = e.target.value;
+    isAllValid ? confirmation() : inputsData()  
   })
