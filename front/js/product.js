@@ -81,9 +81,9 @@ function addProduct() {
         //      }si non {msg alerte et stopper}
         // }  
     }else if(selectedColor != "" && selectedQuantity > 1 && selectedQuantity < 100){
-        
+        console.log("PASSE???")
         // créer un objet produit sélectionné
-        const selectedProduct = {
+        let selectedProduct = {
             id: id,
             color: selectedColor,
             quantity: selectedQuantity,
@@ -107,10 +107,19 @@ function addProduct() {
             }else{
                 alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier, cela vous fait un total de ${totalQuantity} unités pour ce produit de ce coloris`);
             selectedProduct.quantity = totalQuantity;
-            cart.push(selectedProduct);
-            const result = cart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
+            const result = cart.map((productObj) => {
+                if (productObj.id === selectedProduct.id) {
+                productObj.quantity === totalQuantity;
+                console.log("testnouveau");
+                return productObj;
+                /// qqch a rajouter
+                }
+            })
             console.log(result);
-            localStorage.setItem("Cart", JSON.stringify(result))
+            localStorage.setItem("Cart", JSON.stringify(result));
+            // const result = cart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
+            // console.log(result);
+            // // localStorage.setItem("Cart", JSON.stringify(result))
             }
         }
         console.log("test4");
