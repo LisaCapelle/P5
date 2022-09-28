@@ -164,6 +164,11 @@ if (cart == null){
     cartOrderElement.style.visibility='hidden';
 }else{
     cart = JSON.parse(localStorage.getItem("Cart"));
+    // ici trier le tableau par ID (cart.sort())
+    // cart.sort(function (a,b) {
+    // return a.id - b.id
+    // };
+    // console.log(cart);
     if(cart.length == 0){
         alert("Votre panier est vide")
             let cartOrderElement = document.querySelector('.cart__order');
