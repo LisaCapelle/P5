@@ -108,12 +108,12 @@ function addProduct() {
                 alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier, cela vous fait un total de ${totalQuantity} unités pour ce produit de ce coloris`);
             selectedProduct.quantity = totalQuantity;
             const result = cart.map((productObj) => {
-                if (productObj.id === selectedProduct.id) {
-                productObj.quantity === totalQuantity;
+                if (productObj.id === selectedProduct.id && productObj.color === selectedProduct.color) {
+                productObj.quantity = totalQuantity;
                 console.log("testnouveau");
                 return productObj;
-                /// qqch a rajouter
                 }
+            return productObj
             })
             console.log(result);
             localStorage.setItem("Cart", JSON.stringify(result));

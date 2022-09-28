@@ -166,13 +166,9 @@ if (cart == null){
     cart = JSON.parse(localStorage.getItem("Cart"));
     // ici trier le tableau par ID (cart.sort())
 
-/// TEST
-    cart.sort(
-        (a,b) => {
-    return a.id - b.id
-    }
-    )
-    
+    cart.sort((a,b) => parseInt(a.id) - parseInt(b.id));
+    console.log(cart);
+    localStorage.setItem("Cart", JSON.stringify(cart));
     console.log(cart);
 /// TEST
 
