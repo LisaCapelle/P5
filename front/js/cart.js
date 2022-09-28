@@ -165,10 +165,17 @@ if (cart == null){
 }else{
     cart = JSON.parse(localStorage.getItem("Cart"));
     // ici trier le tableau par ID (cart.sort())
-    // cart.sort(function (a,b) {
-    // return a.id - b.id
-    // };
-    // console.log(cart);
+
+/// TEST
+    cart.sort(
+        (a,b) => {
+    return a.id - b.id
+    }
+    )
+    
+    console.log(cart);
+/// TEST
+
     if(cart.length == 0){
         alert("Votre panier est vide")
             let cartOrderElement = document.querySelector('.cart__order');
