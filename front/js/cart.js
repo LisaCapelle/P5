@@ -41,10 +41,9 @@ document.title = "Page Panier";
 // changer la quantité et recalculer le total
 const handleChange = (qtyInputs, cart) => {
     // ajouter EventListener pour chaque input l'un après l'autre (forEach)
-    console.log(qtyInputs);
+    // console.log(qtyInputs);
     qtyInputs.forEach((input, index) =>{
         input.addEventListener("change", (e) => {
-            console.log(index);
             // récupérer les infos input
             let value = + e.target.value;
             if(value < 1 || value > 100){
@@ -52,9 +51,7 @@ const handleChange = (qtyInputs, cart) => {
             }else{
                 // récupérer les infos (id & couleur) du produit concerné par le changement d'input
                 let id = e.currentTarget.closest(".cart__item").dataset.id;
-                console.log(id);
-                let color = e.currentTarget.closest(".cart__item").dataset.color;
-                console.log(color);        
+                let color = e.currentTarget.closest(".cart__item").dataset.color;    
 
                 /* remplacer la quantité par la quantité modifiée (variable value) + 
                 mettre à jour cette quantité dans local Storage + modifier 
@@ -76,9 +73,7 @@ const handleDelete = (deleteItems, cart) => {
     // ajouter EventListener pour chaque bouton l'un après l'autre (forEach)
     deleteItems.forEach((deleteItem, index) =>{
         deleteItem.addEventListener('click', (e) => {
-            // ICI PROBLEME LA CONSOLE NE S'AFFICHE PAS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            console.log("delete");
-            
+                        
             // récupérer les infos (id et couleur) du produit concerné par la suppression
             let id = e.currentTarget.closest(".cart__item").dataset.id;
             let color = e.currentTarget.closest(".cart__item").dataset.color;
@@ -88,7 +83,6 @@ const handleDelete = (deleteItems, cart) => {
             console.log(newCart);
             // écraser l'ancien localStorage avec la maj et recharger la page
             localStorage.setItem("Cart", JSON.stringify(newCart));
-            console.log(newCart.length);
             cartItems.innerHTML = "";
             location.reload();                  
         })
@@ -160,31 +154,28 @@ if (cart == null){
     cart = [];
     alert("Le panier n'existe pas");
     let cartOrderElement = document.querySelector('.cart__order');
-    console.log(cartOrderElement);
+    // console.log(cartOrderElement);
     cartOrderElement.style.visibility='hidden';
 }else{
     cart = JSON.parse(localStorage.getItem("Cart"));
     // ici trier le tableau par ID (cart.sort())
 
-    cart.sort((a,b) => parseInt(a.id) - parseInt(b.id));
-    console.log(cart);
-    localStorage.setItem("Cart", JSON.stringify(cart));
-    console.log(cart);
-/// TEST
-
     if(cart.length == 0){
         alert("Votre panier est vide")
             let cartOrderElement = document.querySelector('.cart__order');
-            console.log(cartOrderElement);
+            // console.log(cartOrderElement);
             cartOrderElement.style.visibility='hidden';
     }else{
+        console.log(cart);
+        // ici trier cart
+
         cart.forEach((productObj) => {
             let id = productObj.id;
             let color = productObj.color;
             let quantity = productObj.quantity;
-            console.log(id);
-            console.log(color);
-            console.log(quantity);
+            // console.log(id);
+            // console.log(color);
+            // console.log(quantity);
             fetch(`http://localhost:3000/api/products/${id}`)
             .then(response => {
                 if (response.ok) { 
@@ -193,7 +184,7 @@ if (cart == null){
             })
             .then((data) => {
         
-            console.log(data);
+            // console.log(data);
         
             str = cartItems.innerHTML;
             str += `

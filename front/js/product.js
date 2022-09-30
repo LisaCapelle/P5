@@ -129,8 +129,32 @@ function addProduct() {
 // C. Sélectionner le bouton d'ajout au panier et y rajouter Event Listener pour exécuter la fonction au clic
 const addToCartBtn = document.querySelector("#addToCart");
 addToCartBtn.addEventListener("click", (e) => {
+    console.log("test");
     e.preventDefault();
     // console.log("test");
     addProduct();
+    ///test
+    // rajouter fonction tri du panier produits dans LocalStorage
+    cart = JSON.parse(localStorage.getItem("Cart"));
+    console.log(cart);
+
+
+    cart.sort((a, b) => {
+        const nameA = a.id.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.id.toUpperCase(); // ignore upper and lowercase
+        console.log(nameA);
+        console.log(nameB);
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        // names must be equal
+        return 0;
+    });    
+    console.log(cart);
+    localStorage.setItem("Cart", JSON.stringify(cart))
+    ///fin test
     }
 )
