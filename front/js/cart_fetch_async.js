@@ -169,14 +169,14 @@ if (cart == null){
         
         // ASYNC POUR ATTENDRE LES RESULTATS DU FETCH
 
-        cart.forEach(async (productObj) => {
+        cart.forEach((productObj) => {
             let id = productObj.id;
             let color = productObj.color;
             let quantity = productObj.quantity;
             // console.log(id);
             // console.log(color);
             // console.log(quantity);
-            await fetch(`http://localhost:3000/api/products/${id}`)
+            fetch(`http://localhost:3000/api/products/${id}`)
             .then(response => {
                 if (response.ok) { 
                     return response.json(); 
