@@ -51,37 +51,33 @@ function addProduct() {
 // 2. Sélectionner le choix de quantité et le mettre dans une variable
     const selectedQuantity = quantityElement.value;
 
-
-
-    //// récupérer les éléménets du local storage
+    // récupérer les éléménets du local storage
     let cart;
     localStorage.getItem("Cart");
     // si localStorage encore vide renvoyer objet produit vide
     if (localStorage.getItem("Cart") == null){
     cart = [];
-    // console.log('OK'); 
     }
     // si localStorage avec du contenu renvoyer le contenu parsé
     else {
     cart = JSON.parse(localStorage.getItem("Cart"));
     }
-
-    // si (pas de couleur et/ou pas de quanité) {faire une alerte et stopper}: OK  
+    // si (pas de couleur et/ou pas de quanité) {faire une alerte et ne rien faire}  
     if (selectedColor === "" || selectedQuantity ===""){
         alert("Veuillez choisir une couleur ou veullez vérifier que vous avez saisi une quantité entre 1 et 100 unités")
     
-        // si (couleur OK et quanité <0 et > 100) {faire une alerte et stopper}: OK
+    // si (couleur OK et quanité <0 et > 100) {faire une alerte et ne rien faire}
     }else if(selectedColor != "" && (selectedQuantity <= 0 || selectedQuantity > 100)){
         alert("Veuillez saisir une quantité entre 1 et 100, 100 étant la quantité maximum par produit")
         
-        // si (couleur OK et quantite >0 <100) {
-        //   alors
-        //      (si le même canapé déjà en storage avec meme id meme couleur){
-        //          vérifier que la quantite totale <=100, faire la modification
-        //      }si non {msg alerte et stopper}
-        // }  
-    }else if(selectedColor != "" && selectedQuantity > 1 && selectedQuantity < 100){
-        console.log("PASSE???")
+        /* si (couleur OK et quantite >0 <100) {
+           alors
+             (si le même canapé déjà en storage avec meme id meme couleur){
+                 vérifier que la quantite totale <=100, faire la modification
+             }si non {faire une alerte et ne rien faire}
+        } */  
+    }else if(selectedColor != "" && selectedQuantity > 0 && selectedQuantity <= 100){
+        
         // créer un objet produit sélectionné
         let selectedProduct = {
             id: id,
@@ -94,12 +90,10 @@ function addProduct() {
             return product.id === selectedProduct.id && product.color === selectedProduct.color
         });
         if (findProduct == undefined){
-            console.log("test2")
             alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier`);
             cart.push(selectedProduct);
             localStorage.setItem("Cart", JSON.stringify(cart));
         }else if(findProduct.id === selectedProduct.id && findProduct.color === selectedProduct.color){
-            console.log("test3");
             let totalQuantity = parseInt(findProduct.quantity) + parseInt(selectedProduct.quantity);
             let maximumUntilStop = 100 - findProduct.quantity;
             if (totalQuantity > 100){
@@ -110,7 +104,6 @@ function addProduct() {
             const result = cart.map((productObj) => {
                 if (productObj.id === selectedProduct.id && productObj.color === selectedProduct.color) {
                 productObj.quantity = totalQuantity;
-                console.log("testnouveau");
                 return productObj;
                 }
             return productObj
@@ -118,26 +111,19 @@ function addProduct() {
             console.log(result);
             localStorage.setItem("Cart", JSON.stringify(result));
             // const result = cart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
-            // console.log(result);
-            // // localStorage.setItem("Cart", JSON.stringify(result))
             }
         }
-        console.log("test4");
     }
 }
 
 // C. Sélectionner le bouton d'ajout au panier et y rajouter Event Listener pour exécuter la fonction au clic
 const addToCartBtn = document.querySelector("#addToCart");
 addToCartBtn.addEventListener("click", (e) => {
-    console.log("test");
     e.preventDefault();
-    // console.log("test");
     addProduct();
-    ///test
-    // rajouter fonction tri du panier produits dans LocalStorage
+    //test rajouter fonction tri du panier produits dans LocalStorage
     cart = JSON.parse(localStorage.getItem("Cart"));
     console.log(cart);
-
 
     cart.sort((a, b) => {
         const nameA = a.id.toUpperCase(); // ignore upper and lowercase
