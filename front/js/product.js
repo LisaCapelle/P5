@@ -76,8 +76,8 @@ function addProduct() {
                  vérifier que la quantite totale <=100, faire la modification
              }si non {faire une alerte et ne rien faire}
         } */  
-    }else if(selectedColor != "" && selectedQuantity > 0 && selectedQuantity <= 100){
-        
+    }else {
+        //if(selectedColor != "" && selectedQuantity > 0 && selectedQuantity <= 100)
         // créer un objet produit sélectionné
         let selectedProduct = {
             id: id,
@@ -93,20 +93,20 @@ function addProduct() {
             alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier`);
             cart.push(selectedProduct);
             localStorage.setItem("Cart", JSON.stringify(cart));
-        }else if(findProduct.id === selectedProduct.id && findProduct.color === selectedProduct.color){
+        }else {
             let totalQuantity = parseInt(findProduct.quantity) + parseInt(selectedProduct.quantity);
             let maximumUntilStop = 100 - findProduct.quantity;
             if (totalQuantity > 100){
                 alert(`Veuillez modifier la quantité souhaitée, vous pouvez rajouter encore maximum ${maximumUntilStop} produits, la quantité étant limitée à 100 par produit/couleur`)
             }else{
                 alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier, cela vous fait un total de ${totalQuantity} unités pour ce produit de ce coloris`);
-            selectedProduct.quantity = totalQuantity;
+            // selectedProduct.quantity = totalQuantity;
+            // console.log(totalQuantity);
             const result = cart.map((productObj) => {
                 if (productObj.id === selectedProduct.id && productObj.color === selectedProduct.color) {
                 productObj.quantity = totalQuantity;
-                return productObj;
                 }
-            return productObj
+            return productObj;
             })
             console.log(result);
             localStorage.setItem("Cart", JSON.stringify(result));

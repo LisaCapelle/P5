@@ -158,8 +158,7 @@ if (cart == null){
     cartOrderElement.style.visibility='hidden';
 }else{
     cart = JSON.parse(localStorage.getItem("Cart"));
-    // ici trier le tableau par ID (cart.sort())
-
+    
     if(cart.length == 0){
         alert("Votre panier est vide")
             let cartOrderElement = document.querySelector('.cart__order');
@@ -167,7 +166,8 @@ if (cart == null){
             cartOrderElement.style.visibility='hidden';
     }else{
         console.log(cart);
-        // ici trier cart
+        
+        // ASYNC POUR ATTENDRE LES RESULTATS DU FETCH
 
         cart.forEach((productObj) => {
             let id = productObj.id;
