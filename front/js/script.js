@@ -21,7 +21,7 @@ function getProductList() {
                 </a>`
             }
         })
-        .catch((error) => {alert("Une erreur est survenue")
+        .catch((error) => {alert("Une erreur est survenue, le catalogue n'est pas disponible")
         });
 }
 getProductList();

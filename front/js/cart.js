@@ -18,7 +18,7 @@ let cartItems = document.querySelector("#cart__items");
 let totalQuantity = document.querySelector("#totalQuantity");
 let totalPrice = document.querySelector("#totalPrice");
 
-// string pour l'injection dans le HTML et 
+// string pour l'injection dans le HTML 
 let str = "";
 
 // récupérer les éléments du panier
@@ -173,19 +173,10 @@ if (cart == null){
             let id = productObj.id;
             let color = productObj.color;
             let quantity = productObj.quantity;
-            // console.log(id);
-            // console.log(color);
-            // console.log(quantity);
-            await fetch(`http://localhost:3000/api/products/${id}`)
-            .then(response => {
-                if (response.ok) { 
-                    return response.json(); 
-                }
-            })
-            .then((data) => {
-        
-            // console.log(data);
-        
+            
+            const response = await fetch(`http://localhost:3000/api/products/${id}`);
+            const data = await response.json();
+            // console.log(cartItems.innerHTML);
             str = cartItems.innerHTML;
             str += `
             <article class="cart__item" data-id="${productObj.id}" data-color="${productObj.color}">
@@ -203,18 +194,15 @@ if (cart == null){
             </div>
             </article>`; 
             cartItems.innerHTML = str;
-            
+            console.log(cartItems.innerHTML);
             totalQty = totalQty + Number(productObj.quantity);
             let subTotal = Number(data.price) * Number(productObj.quantity);
             totalPr = totalPr + subTotal;
         
             totalQuantity.innerText = totalQty;
             totalPrice.innerText = totalPr;
-            
-            })
-            .then(() => {
-        
-            // ICI RAJOUTER LES EVENEMENTS SUR SUPPRESSION ET MODIF QTES 
+
+           // ICI RAJOUTER LES EVENEMENTS SUR SUPPRESSION ET MODIF QTES 
             //sélectionner toutes les balises input qui permettent de renseigner la quantité & supprimer
             let qtyInputs = document.querySelectorAll(".itemQuantity");
             // console.log(qtyInputs);
@@ -224,7 +212,57 @@ if (cart == null){
             handleChange(qtyInputs, cart);
             // delete a product
             handleDelete(deleteItems, cart);
-            })
+
+
+
+            // .then(response => {
+            //     if (response.ok) { 
+            //         return response.json(); 
+            //     }
+            // })
+            // .then((data) => {
+        
+            // // console.log(data);
+        
+            // str = cartItems.innerHTML;
+            // str += `
+            // <article class="cart__item" data-id="${productObj.id}" data-color="${productObj.color}">
+            // <div class="cart__item__img"><img src="${data.imageUrl}" alt="${data.altTxt}"></div>
+            // <div class="cart__item__content">
+            //     <div class="cart__item__content__description">
+            //         <h2>${data.name}</h2><p>${productObj.color}</p><p>${data.price}</p>
+            //     </div>
+            //     <div class="cart__item__content__settings">
+            //         <div class="cart__item__content__settings__quantity">
+            //         <p>Qté : </p><input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productObj.quantity}">
+            //     </div>
+            //     <div class="cart__item__content__settings__delete"><p class="deleteItem">Supprimer</p></div>
+            //     </div>
+            // </div>
+            // </article>`; 
+            // cartItems.innerHTML = str;
+            
+            // totalQty = totalQty + Number(productObj.quantity);
+            // let subTotal = Number(data.price) * Number(productObj.quantity);
+            // totalPr = totalPr + subTotal;
+        
+            // totalQuantity.innerText = totalQty;
+            // totalPrice.innerText = totalPr;
+            
+            // })
+            // .then(() => {
+        
+            // // ICI RAJOUTER LES EVENEMENTS SUR SUPPRESSION ET MODIF QTES 
+            // //sélectionner toutes les balises input qui permettent de renseigner la quantité & supprimer
+            // let qtyInputs = document.querySelectorAll(".itemQuantity");
+            // // console.log(qtyInputs);
+            // let deleteItems = document.querySelectorAll(".deleteItem");
+
+            // // handle quantity changes  
+            // handleChange(qtyInputs, cart);
+            // // delete a product
+            // handleDelete(deleteItems, cart);
+            // })
         })
     }
 }
