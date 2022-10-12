@@ -1,6 +1,6 @@
 // A. Afficher le produit sélectionné 
 
-// éléments à ajouter à la page produits
+// sélectionner les éléments à ajouter à la page produits
 let imgElement = document.querySelector(".item__img");
 let titleElement = document.querySelector("#title");
 let priceElement = document.querySelector("#price");
@@ -13,7 +13,7 @@ const pageString = window.location.search;
 const urlParams = new URLSearchParams(pageString);
 const id = urlParams.get("id");
 
-// récupérer les données du produit cliqué dans l'API
+// récupérer les données du produit cliqué dans l'API et afficher le produit 
 function getProduct() {
     fetch(`http://localhost:3000/api/products/${id}`)
         .then(response => { if (response.ok) { return response.json(); } })
@@ -22,16 +22,15 @@ function getProduct() {
 }
 getProduct();
 
-// afficher les couleurs du produit cliqué
+// afficher les couleurs du produit cliqué (fonction utilisée dans displayProduct())
 function getColorOptions(product) {
-    // console.log(product);
     for (let i = 0; i < product.colors.length; i++) {
         colorsElement.innerHTML += `<option value="${product.colors[i]}"> 
         ${product.colors[i]}</option>`
     }
 }
 
-// afficher tous les éléments du produit cliqué
+// fonction pour afficher tous les éléments du produit cliqué
 function displayProduct(product) {
     imgElement.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}"></img>`;
     titleElement.innerHTML = `${product.name}`;
@@ -41,17 +40,18 @@ function displayProduct(product) {
     getColorOptions(product);
 }
 
-//B. créer la fonction d'ajouter le produit au Local Storage
+//B. Ajouter le produit au localStorage
 
+// fonction pour ajouter le produit au localStorage
 function addProduct() {
 
-// 1. Sélectionner le choix de couleur et le mettre dans une variable
+    // sélectionner le choix de couleur
     const selectedColor = colorsElement.options[colorsElement.selectedIndex].value;
 
-// 2. Sélectionner le choix de quantité et le mettre dans une variable
+    // sélectionner le choix de quantité
     const selectedQuantity = quantityElement.value;
 
-    // récupérer les éléménets du local storage
+    // récupérer les éléménets du localStorage
     let cart;
     localStorage.getItem("Cart");
     // si localStorage encore vide renvoyer objet produit vide
@@ -62,22 +62,19 @@ function addProduct() {
     else {
     cart = JSON.parse(localStorage.getItem("Cart"));
     }
-    // si (pas de couleur et/ou pas de quanité) {faire une alerte et ne rien faire}  
+    // si pas de couleur et/ou pas de quanité, faire une alerte et ne rien faire
     if (selectedColor === "" || selectedQuantity ===""){
         alert("Veuillez choisir une couleur ou veullez vérifier que vous avez saisi une quantité entre 1 et 100 unités")
     
-    // si (couleur OK et quanité <0 et > 100) {faire une alerte et ne rien faire}
+    // si couleur sélectionnée mais quanité <0 & >100, faire une alerte et ne rien faire
     }else if(selectedColor != "" && (selectedQuantity <= 0 || selectedQuantity > 100)){
         alert("Veuillez saisir une quantité entre 1 et 100, 100 étant la quantité maximum par produit")
         
-        /* si (couleur OK et quantite >0 <100) {
-           alors
-             (si le même canapé déjà en storage avec meme id meme couleur){
-                 vérifier que la quantite totale <=100, faire la modification
-             }si non {faire une alerte et ne rien faire}
-        } */  
+    /* si couleur sélectionnée et quantite >0 <100, 
+    si le même canapé déjà en storage avec meme id meme couleur,
+    vérifier que la quantite totale <=100 et si oui faire la modification,
+    si non, faire une alerte et ne rien faire */  
     }else {
-        //if(selectedColor != "" && selectedQuantity > 0 && selectedQuantity <= 100)
         // créer un objet produit sélectionné
         let selectedProduct = {
             id: id,
@@ -100,17 +97,13 @@ function addProduct() {
                 alert(`Veuillez modifier la quantité souhaitée, vous pouvez rajouter encore maximum ${maximumUntilStop} produits, la quantité étant limitée à 100 par produit/couleur`)
             }else{
                 alert(`Vous venez d'ajouter ${selectedQuantity} ${titleElement.textContent} coloris ${selectedColor} au panier, cela vous fait un total de ${totalQuantity} unités pour ce produit de ce coloris`);
-            // selectedProduct.quantity = totalQuantity;
-            // console.log(totalQuantity);
             const result = cart.map((productObj) => {
                 if (productObj.id === selectedProduct.id && productObj.color === selectedProduct.color) {
                 productObj.quantity = totalQuantity;
                 }
             return productObj;
             })
-            console.log(result);
             localStorage.setItem("Cart", JSON.stringify(result));
-            // const result = cart.filter((productObj)=>{ return productObj.quantity != findProduct.quantity && productObj.id === findProduct.id})
             }
         }
     }
@@ -121,26 +114,21 @@ const addToCartBtn = document.querySelector("#addToCart");
 addToCartBtn.addEventListener("click", (e) => {
     e.preventDefault();
     addProduct();
-    //test rajouter fonction tri du panier produits dans LocalStorage
     cart = JSON.parse(localStorage.getItem("Cart"));
-    console.log(cart);
-
+    
+    //trier le contenu
     cart.sort((a, b) => {
-        const nameA = a.id.toUpperCase(); // ignore upper and lowercase
-        const nameB = b.id.toUpperCase(); // ignore upper and lowercase
-        console.log(nameA);
-        console.log(nameB);
+        const nameA = a.id.toUpperCase(); // ignorer upper & lowercase
+        const nameB = b.id.toUpperCase(); // ignorer upper & lowercase
         if (nameA < nameB) {
           return -1;
         }
         if (nameA > nameB) {
           return 1;
         }
-        // names must be equal
+        // si A = B
         return 0;
-    });    
-    console.log(cart);
+    });
     localStorage.setItem("Cart", JSON.stringify(cart))
-    ///fin test
     }
 )
