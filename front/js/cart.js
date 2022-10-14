@@ -184,7 +184,7 @@ if (cart == null){
                 <div class="cart__item__img"><img src="${data.imageUrl}" alt="${data.altTxt}"></div>
                 <div class="cart__item__content">
                     <div class="cart__item__content__description">
-                        <h2>${data.name}</h2><p>${productObj.color}</p><p>${data.price}</p>
+                        <h2>${data.name}</h2><p>${productObj.color}</p><p>${data.price} €</p>
                     </div>
                     <div class="cart__item__content__settings">
                         <div class="cart__item__content__settings__quantity">
@@ -248,12 +248,12 @@ const inputsData = () => {
 // envoyer les données à l'API, rédiriger vers la page de confirmation, supprimer le local storage
 const confirmation = (dataToSend) => {
 // envoyer les données à l'API
-fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    body: JSON.stringify(dataToSend),
-    headers: {"content-type": "application/json"
-    }
-})
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(dataToSend),
+        headers: {"content-type": "application/json"
+        }
+    })
     .then((res) => res.json())
     .then((data) => {
         // rédiriger à la page de confirmation
@@ -261,11 +261,11 @@ fetch("http://localhost:3000/api/products/order", {
 
         // supprimer le localStorage
         localStorage.clear();
-        })
-    } 
+    })
+} 
 
-  // exécuter les commandes au clic sur bouton "envoyer" 
-  orderBtn.addEventListener("click", (e) => {
+// exécuter les commandes au clic sur bouton "envoyer" 
+orderBtn.addEventListener("click", (e) => {
     // empêcher le comportement par défaut
     e.preventDefault();
     let productIds = cart.map((element) => {return element.id})
