@@ -158,6 +158,8 @@ if (cart == null){
     alert("Le panier n'existe pas");
     let cartOrderElement = document.querySelector('.cart__order');
     cartOrderElement.style.visibility='hidden';
+    totalPrice.innerText = 0;
+    totalQuantity.innerText = 0;
 }else{
     cart = JSON.parse(localStorage.getItem("Cart"));
     
@@ -165,6 +167,8 @@ if (cart == null){
         alert("Votre panier est vide")
             let cartOrderElement = document.querySelector('.cart__order');
             cartOrderElement.style.visibility='hidden';
+            totalPrice.innerText = 0;
+            totalQuantity.innerText = 0;
     }else{
         for (let i = 0; i < cart.length; i++)
         {productObj = cart[i];
